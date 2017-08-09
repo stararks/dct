@@ -3,6 +3,7 @@ package image
 import (
 	"bufio"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"os/exec"
 	"strings"
@@ -15,31 +16,34 @@ func CmdcleanImageCommand() *cobra.Command {
 		Use:   "cleani [reserve-file]",
 		Short: "delete images",
 		Run: func(cmd *cobra.Command, args []string) {
+			var reserve []string
+			images := getCacheImages([]string{"images", "-q"})
+			if images == nil {
+				return
+			}
+			stat, _ := os.Stdin.Stat()
+			if stat.Mode()&os.ModeNamedPipe != 0 {
+				stdinContent, _ := ioutil.ReadAll(os.Stdin)
+				reserve = strings.Fields(string(stdinContent))
+			}
 			if len(args) == 1 {
-				images := getCacheImages([]string{"images", "-q"})
-				if images == nil {
-					return
-				}
-				reserve, err := getReserveImageFromFile(args[0])
+				fileContent, err := getReserveImageFromFile(args[0])
 				if err != nil {
 					fmt.Println("Get reserved images error")
 					return
 				}
-				if reserve == nil {
-					cleanDangling()
-				} else {
-					for _, r := range reserve {
-						for i, v := range images {
-							if v == r {
-								images = append(images[:i], images[i+1:]...)
-							}
-						}
-					}
-					cleanImage(images)
-				}
-			} else {
-				cleanDangling()
+				reserve = append(reserve, fileContent...)
 			}
+			for _, r := range reserve {
+				for i, v := range images {
+					if v == r {
+						images = append(images[:i], images[i+1:]...)
+					}
+				}
+			}
+			cleanImage(images)
+
+			cleanDangling()
 			return
 		},
 	}
@@ -64,7 +68,7 @@ func cleanImage(images []string) {
 func cleanDangling() {
 	images := getCacheImages([]string{"images", "-q", "--filter", "dangling=true"})
 	if images != nil {
-		fmt.Println("Only Dangling image will be removed from local cache")
+		fmt.Println("Dangling image will be removed from local cache")
 		cleanImage(images)
 	}
 }
