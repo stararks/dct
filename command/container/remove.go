@@ -10,6 +10,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// CmdcleanContainersCommand command clean container
 func CmdcleanContainersCommand() *cobra.Command {
 
 	cmd := &cobra.Command{
@@ -49,6 +50,7 @@ func operateContainer(op, c string) ([]string, error) {
 	}
 }
 
+// CleanContainers clean containers
 func CleanContainers() {
 	containers, err := operateContainer("ps", "")
 	if err != nil {
