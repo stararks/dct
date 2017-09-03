@@ -16,6 +16,7 @@ var sema = make(chan struct{}, 3)
 var ch = make(chan string)
 var recursive bool
 
+// CmdloadImageCommand load image
 func CmdloadImageCommand() *cobra.Command {
 
 	cmd := &cobra.Command{

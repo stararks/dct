@@ -19,6 +19,7 @@ var defaultPort = "5000"
 
 var protocal = "http://"
 
+// CmdlistImageCommand list image
 func CmdlistImageCommand() *cobra.Command {
 
 	cmd := &cobra.Command{
@@ -29,10 +30,9 @@ func CmdlistImageCommand() *cobra.Command {
 				fmt.Println("Miss registry")
 				return
 			}
+			registry = args[0]
 			colon := strings.LastIndex(args[0], ":")
-			if colon == -1 {
-				registry = args[0]
-			} else {
+			if colon != -1 {
 				registry = args[0][:colon]
 				defaultPort = args[0][colon+1:]
 			}

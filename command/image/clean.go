@@ -11,6 +11,7 @@ import (
 	"github.com/spf13/cobra"
 )
 
+// CmdcleanImageCommand clean image
 func CmdcleanImageCommand() *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "cleani [reserve-file]",
