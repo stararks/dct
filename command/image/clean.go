@@ -35,15 +35,16 @@ func CmdcleanImageCommand() *cobra.Command {
 				}
 				reserve = append(reserve, fileContent...)
 			}
-			for _, r := range reserve {
-				for i, v := range images {
-					if v == r {
-						images = append(images[:i], images[i+1:]...)
+			if len(reserve) != 0 {
+				for _, r := range reserve {
+					for i, v := range images {
+						if v == r {
+							images = append(images[:i], images[i+1:]...)
+						}
 					}
 				}
+				cleanImage(images)
 			}
-			cleanImage(images)
-
 			cleanDangling()
 			return
 		},
